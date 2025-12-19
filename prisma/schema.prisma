@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// PIEZA 
+model Pieza {
+  id     Int    @id @default(autoincrement())
+  nombre String
+  coste  Float
+
+  // relación muchos-a-muchos con Reparacion vía tabla intermedia
+  reparaciones PiezaReparacion[]
+}
+
+// REPARACION
+model Reparacion {
+  id    Int    @id @default(autoincrement())
+  fecha String
+  coste Float
+
+  // relación muchos-a-uno con Vehiculo
+  vehiculoId Int
+  vehiculo   Vehiculo @relation(fields: [vehiculoId], references: [id])
+
+  piezas PiezaReparacion[]
+}
+
+// VEHICULO
+model Vehiculo {
+  id     Int    @id @default(autoincrement())
+  marca  String
+  modelo String
+
+  reparaciones Reparacion[]
+}
+
+// TABLA INTERMEDIA PIEZA-REPARACION 
+model PiezaReparacion {
+  piezaId      Int
+  reparacionId Int
+
+  pieza      Pieza      @relation(fields: [piezaId], references: [id])
+  reparacion Reparacion @relation(fields: [reparacionId], references: [id])
+
+  @@id([piezaId, reparacionId])
+}
+
+// USUARIOS PARA AUTH 
+model Usuario {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+}
